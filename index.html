@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dictionary</title>
+    <script
+  src="https://code.jquery.com/jquery-3.7.0.min.js"
+  integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g="
+  crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:wght@300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <style>
+    * {box-sizing: border-box;}
+
+    body {
+        font-family: 'Roboto Flex', sans-serif;
+        background-color: black;
+        color: white;
+    }
+
+    input {
+        background-color: #111111;
+        border: none;
+        border-radius: 16px;
+        padding: 8px;
+        font-size: 1rem;
+        color: white;
+    }
+
+    button {
+        background-color: #4681f4;
+        border: none;   
+        border-radius: 16px;
+        padding: 8px;
+        font-size: 1rem;
+        color: white;
+    }
+
+    button:hover {
+        background-color:rgb(106, 147, 230);
+    }
+
+    #container h1 {
+        font-style: oblique; 
+    }
+
+    #container h3 {
+        font-style: italic;
+    }
+  </style>
+</head>
+<body>
+    <input type="text" placeholder="Enter a word">
+    <button id="searchBtn"><i class="fa fa-search"></i></button>
+    <hr>
+    <div id="container"></div>
+
+    <script>
+        function getWord(word) {
+            $.getJSON(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`, function(data) {
+                let word = $("<h1><//h1>").text(data[0].word);  
+                $("#container").append(word); 
+                
+                let meanings = data[0].meanings;
+                meanings.forEach(element => {
+                    let pos = $("<h3></h3>").text(element.partOfSpeech);
+                    $("#container").append(pos); 
+                    element.definitions.forEach(function(element, i) {
+                        let def = $("<h4></h4>").text(`${i+1}. ${element.definition}`);
+                        $("#container").append(def); 
+                    })
+                    
+
+                });
+                console.log(data);
+            })
+            .fail(function() {
+                getWord("example");
+                alert(`${word} is not a valid word.`);
+            })
+        }
+
+        $(document).ready(function() {
+            getWord("example");
+        });
+
+        $("#searchBtn").on("click", function() {
+            $("#container").find("h1").remove();
+            $("#container").find("h3").remove();
+            $("#container").find("h4").remove();
+
+            getWord($("input").val());
+        });
+    </script>
+</body>
+</html>
